@@ -5,7 +5,7 @@ Aby uruchomić przykład klonujemy gita, otwieramy w IntelliJ, który pobierze n
 
 ## Set-Up bazy danych
 
-W pliku **src/main/resources/application.properties** dodajemy własne dane do uwierzytelnienia do bazy danych Postres.
+W pliku **src/main/resources/application.properties** dodajemy własne dane do uwierzytelnienia do bazy danych Postgres.
 
 Jeśli nie chcemy tworzyć bazy w chmurze, możemy użyć lokalnej H2 zmieniając w ``application.properties``:
  - ``spring.datasource.driverClassName`` na ``org.h2.Driver``
@@ -13,6 +13,14 @@ Jeśli nie chcemy tworzyć bazy w chmurze, możemy użyć lokalnej H2 zmieniają
  - użytkownik i hasło mogą być dowolne, potrzebne są jedynie do **h2 console**, dla których należy dodać:
   ``spring.h2.console.enabled=true`` oraz ``spring.h2.console.path=/h2-console`` (lub inny adres).
   
+ Również potrzebujemy upewnić się, że w `pom.xml` mamy daną wtedy odpowiednią dependencję:
+ ```
+ <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+ </dependency>
+ ```
  Za zmianę ustawień tworzenia bazy odpowiada ``spring.jpa.hibernate.ddl-auto`` (tutaj mamy ``update``, by nie usuwać rekordów za każdym uruchomieniem).
  
  
@@ -21,12 +29,12 @@ Jeśli nie chcemy tworzyć bazy w chmurze, możemy użyć lokalnej H2 zmieniają
 - **Student** - zawiera `courses` czyli listę kursów, na które student jest zapisany,
 - **Teacher** - zawiera `courses` - listę kursów, które nauczyciel prowadzi,
 - **Course** - `students` to lista studentów uczęszczających na kurs, `teacher` to nauczyciel prowadzący.
-  Warto zacznaczyć, że dla kursu prowadzący będzie w bazie kluczem obcym, podczas gdy powiązanie student-kurs jest reprezentowane w tabeli asocjacyjnej `student_course` (argument adnotacji `@JoinTable`).
+Warto zacznaczyć, że dla kursu prowadzący będzie w bazie kluczem obcym (`@JoinColumn`), podczas gdy powiązanie student-kurs jest reprezentowane w tabeli asocjacyjnej `student_course` (argument adnotacji `@JoinTable`).
   
-  Dla każdej z tych klas stworzone zostało **repository**, które dostarcza metod do operacji na konkretnej encji. Repozytoria są wstrzyknięte do klasy ``TestController``, która definiuje endpointy aplikacji.
+Dla każdej z tych klas stworzone zostało **repository**, które dostarcza metod do operacji na konkretnej encji. Repozytoria są wstrzyknięte do klasy ``TestController``, która definiuje endpointy aplikacji.
   
  ## Endpointy
- Po uruchomieniu ``SpringDataPrezentacjaApplication`` będziemy mieć dostępne następujące endpointy zdefiniowane w ``TestController``
+ Po uruchomieniu ``SpringDataPrezentacjaApplication`` będziemy mieć dostępne następujące endpointy zdefiniowane w ``TestController`` 
  
  
 | Endpoint  | Typ | Opis|
@@ -54,4 +62,11 @@ Jeśli nie chcemy tworzyć bazy w chmurze, możemy użyć lokalnej H2 zmieniają
 | `/course/{course_id}/teacher/{teacher_id}`| PUT |Dodanie do kursu o id **course_id** nauczyciela o id **teacher_id**|
 
 ## Inne
+Jeżeli chcemy widzieć w konsoli, jakie zapytania SQL są wykonywane na bazie możemy dodać do `application.properties` następujące instrukcje:
+```
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+
+```
+
 Niniejszy kod prezentuje jedynie pokrótce co możemy osiągnąć dzięki użyciu SpringData. Nie jest on w żadnym wypadku pełnym kodem aplikacji.
